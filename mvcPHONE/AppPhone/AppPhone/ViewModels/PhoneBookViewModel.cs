@@ -1,17 +1,19 @@
-﻿using AppPhone.Models;
-using AppPhone.Services;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Xamarin.Forms;
-
-namespace AppPhone.ViewModels
+﻿namespace AppPhone.ViewModels
 {
+    using AppPhone.Models;
+    using AppPhone.Services;
+    using GalaSoft.MvvmLight.Command;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Windows.Input;
+    using Xamarin.Forms;
+
     public class PhoneBookViewModel:BaseViewModel
     {
         #region Attributes
         private ApiService apiService;
         private ObservableCollection<Phone> phones;
+        private bool isRefreshing;
         #endregion
 
         #region Properties
@@ -19,6 +21,12 @@ namespace AppPhone.ViewModels
         {
             get { return this.phones; }
             set { SetValue(ref this.phones, value); }
+        }
+
+        public bool IsRefreshing
+        {
+            get { return this.isRefreshing; }
+            set { SetValue(ref this.isRefreshing, value); }
         }
         #endregion
 
@@ -33,7 +41,8 @@ namespace AppPhone.ViewModels
         #region Methods
         private async void Loadphones()
         {
-            var connection = await apiService.CheckConnection();
+            this.IsRefreshing = true;
+            var connection =  await apiService.CheckConnection();
             if (!connection.IsSuccess)
             {
                 await Application.Current.MainPage.DisplayAlert(
@@ -43,11 +52,11 @@ namespace AppPhone.ViewModels
                   );
                 return;
             }
-
-            var response = await apiService.GetList<Phone>(
-                "http://localhost:50129/",  //base
-                "api/",                     //prefijo
-                "Phones"                    //controlador
+            
+            var response = await apiService.GetListAsync<Phone>(
+                "http://localhost:50553/",  //base
+                "/api",                     //prefijo
+                "/Phones"                    //controlador
                 );
 
             if (!response.IsSuccess)
@@ -61,8 +70,16 @@ namespace AppPhone.ViewModels
             }
             MainViewModel main = MainViewModel.GetInstance();
             main.ListPhone = (List<Phone>) response.Result;
-
             this.phones = new ObservableCollection<Phone>(ToPhoneCollect());
+            this.IsRefreshing = false;
+        }
+
+        public ICommand RefreshCommand
+        {
+            get
+            {
+                return new RelayCommand(Loadphones);
+            }
         }
 
         private IEnumerable<Phone> ToPhoneCollect()
@@ -72,15 +89,16 @@ namespace AppPhone.ViewModels
             foreach (var lista in main.ListPhone)
             {
                 Phone phone = new Phone();
-                phone.PhoneID = lista.PhoneID;
+                phone.ContactID = lista.ContactID;
                 phone.Name = lista.Name;
                 phone.Type = lista.Type;
-                phone.Contact = lista.Contact;
+                phone.ContactValue = lista.ContactValue;
                 collection.Add(phone);
             }
 
             return (collection);
         }
+        
         #endregion
     }
 }

@@ -5,26 +5,31 @@ namespace AppPhone.ViewModels
 {
     public class MainViewModel
     {
+        
+        private static MainViewModel instance;
+
         #region Properties
+        public string Token { get; set; }
+        public string TokenType { get; set; }
         public List<Phone> ListPhone { get; set; }
         #endregion
 
 
         #region ViewModels
+        public LoginViewModel Login { get; set; }
+
         public PhoneBookViewModel phoneBookViewModel { get; set; }
+        
         #endregion
 
         #region Constructor
         public MainViewModel()
         {
             instance = this;
-            phoneBookViewModel = new PhoneBookViewModel();
-        } 
+        }
         #endregion
 
-
         #region Singleton
-        private static MainViewModel instance;
         public static MainViewModel GetInstance()
         {
             if (instance == null)

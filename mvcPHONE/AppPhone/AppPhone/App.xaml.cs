@@ -2,6 +2,8 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using AppPhone.Views;
+using AppPhone.ViewModels;
+
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace AppPhone
 {
@@ -12,7 +14,8 @@ namespace AppPhone
             InitializeComponent();
 
             // MainPage = new MainPage();
-            MainPage = new PhoneBookPage();
+            MainViewModel.GetInstance().Login = new LoginViewModel();
+            this.MainPage = new NavigationPage(new LoginPage());
         }
 
         protected override void OnStart()

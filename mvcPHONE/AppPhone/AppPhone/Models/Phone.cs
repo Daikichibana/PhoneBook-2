@@ -1,7 +1,7 @@
-﻿namespace AppPhone.Models
+﻿using Newtonsoft.Json;
+
+namespace AppPhone.Models
 {
-
-
     public enum TypeContact
     {
         PhoneNumber,
@@ -13,12 +13,13 @@
 
     public class Phone
     {
-     
-        public int PhoneID { get; set; }
+        [JsonProperty("ContactID")]
+        public int ContactID { get; set; }
+        [JsonProperty("Name")]
         public string Name { get; set; }
+        [JsonProperty("Type")]
         public TypeContact Type { get; set; }
-        public string Contact { get; set; }
-
-
+        [JsonProperty("ContactValue")]
+        public string ContactValue { get; set; }
     }
 }

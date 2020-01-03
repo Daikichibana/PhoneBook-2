@@ -25,7 +25,7 @@
             }
 
 
-            bool isReachable = VerifyConnectionURL("http://localhost:50048/");
+            bool isReachable = VerifyConnectionURL("http://localhost:50553/");
             if (!isReachable)
             {
                 return new Response
@@ -186,16 +186,19 @@
             }
         }
 
-        public async Task<Response> GetList<T>(
-            string urlBase,
-            string servicePrefix,
-            string controller)
+        public async Task<Response> GetListAsync<T>(
+                    string urlBase,
+                    string servicePrefix,
+                    string controller)
         {
             try
             {
-                var client = new HttpClient();
-                client.BaseAddress = new Uri(urlBase);
-                var url = string.Format("{0}{1}", servicePrefix, controller);
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri(urlBase)
+                };
+
+                var url = $"{servicePrefix}{controller}";
                 var response = await client.GetAsync(url);
                 var result = await response.Content.ReadAsStringAsync();
 
@@ -212,8 +215,7 @@
                 return new Response
                 {
                     IsSuccess = true,
-                    Message = "Ok",
-                    Result = list,
+                    Result = list
                 };
             }
             catch (Exception ex)
@@ -221,7 +223,7 @@
                 return new Response
                 {
                     IsSuccess = false,
-                    Message = ex.Message,
+                    Message = ex.Message
                 };
             }
         }
